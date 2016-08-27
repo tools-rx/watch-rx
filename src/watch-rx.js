@@ -14,7 +14,7 @@ export function watchRx (pattern, options) {
       let nextItem = (event) => (name) => observer.next(Object.assign(new GlobResultFile(), {
         event,
         basedir,
-        name
+        name: name.replace(/\\/g, '/')
       }));
 
       ['add', 'change', 'unlink', 'addDir', 'unlinkDir'].forEach(event => {
@@ -24,13 +24,19 @@ export function watchRx (pattern, options) {
       watcher.on('error', err => {
         isFinished = true
         observer.error(err)
-        watcher.close()
+        closeWatcher()
       })
 
       return () => {
         if (!isFinished) {
-          watcher.close()
+          closeWatcher()
         }
+      }
+
+      // Node doesn't exit after closing watchers
+      // https://github.com/paulmillr/chokidar/issues/434
+      function closeWatcher () {
+        watcher.close()
       }
     })
 }
