@@ -9,7 +9,8 @@ import {getSubscriber, sortedFileList} from './test-helpers'
 
 const writeFileRx = Observable.bindNodeCallback(fs.writeFile)
 
-const waitTime = 1000
+const observeMaxTime = 1000
+const operationDelayTime = 750
 
 export const fileSet = {
   localFiles: [
@@ -23,6 +24,24 @@ export const fileSet = {
 
 function localFileName (name) {
   return path.join(fileSet.localPath, name)
+}
+
+function buildEventList (names, globFile) {
+  names.push(`${globFile.event}~${globFile.name}`)
+  return names
+}
+
+function compareEventLists (expected) {
+  return (actual) => {
+    expect(sortedFileList(actual)).toEqual(sortedFileList(expected))
+  }
+}
+
+function performOperations (...operations) {
+  return Observable
+    .timer(operationDelayTime)
+    .concat(...operations)
+    .ignoreElements()
 }
 
 describe('watch-rx', () => {
@@ -41,37 +60,45 @@ describe('watch-rx', () => {
         'add~a/b/two'
       ]
       watchRx('**/*', { cwd: fileSet.localPath })
-        .takeUntil(Observable.timer(waitTime))
-        .reduce((names, globFile) => {
-          names.push(`${globFile.event}~${globFile.name}`)
-          return names
-        }, [])
-        .do((actual) => {
-          expect(sortedFileList(actual)).toEqual(sortedFileList(expected))
-        })
+        .takeUntil(Observable.timer(observeMaxTime))
+        .reduce(buildEventList, [])
+        .do(compareEventLists(expected))
         .subscribe(getSubscriber(done))
     })
 
-    it('should report file changes', (done) => {
+    it('should report single file change', (done) => {
       let expected = [
         'change~a/b/two'
       ]
       Observable
         .merge(
           watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
-          Observable
-            .timer(500)
-            .concat(writeFileRx(localFileName('a/b/two'), 'test'))
-            .ignoreElements()
+          performOperations(
+            writeFileRx(localFileName('a/b/two'), 'test')
+          )
         )
-        .takeUntil(Observable.timer(waitTime))
-        .reduce((names, globFile) => {
-          names.push(`${globFile.event}~${globFile.name}`)
-          return names
-        }, [])
-        .do((actual) => {
-          expect(sortedFileList(actual)).toEqual(sortedFileList(expected))
-        })
+        .takeUntil(Observable.timer(observeMaxTime))
+        .reduce(buildEventList, [])
+        .do(compareEventLists(expected))
+        .subscribe(getSubscriber(done))
+    })
+
+    it('should report multiple file change', (done) => {
+      let expected = [
+        'change~a/b/two',
+        'change~a/c/three'
+      ]
+      Observable
+        .merge(
+          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
+          performOperations(
+            writeFileRx(localFileName('a/b/two'), 'test'),
+            writeFileRx(localFileName('a/c/three'), 'test')
+          )
+        )
+        .takeUntil(Observable.timer(observeMaxTime))
+        .reduce(buildEventList, [])
+        .do(compareEventLists(expected))
         .subscribe(getSubscriber(done))
     })
   })
