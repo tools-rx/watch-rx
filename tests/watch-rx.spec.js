@@ -52,6 +52,10 @@ describe('watch-rx', () => {
       buildFileSet(fileSet).subscribe(getSubscriber(done))
     })
 
+    beforeEach((done) => {
+      setTimeout(done, 1000)
+    })
+
     it('should return expected list of files', (done) => {
       let expected = [
         'addDir~a',
@@ -61,7 +65,7 @@ describe('watch-rx', () => {
         'add~a/b/one',
         'add~a/b/two'
       ]
-      watchRx('**/*', { cwd: fileSet.localPath, usePolling: true })
+      watchRx('**/*', { cwd: fileSet.localPath })
         .takeUntil(Observable.timer(observeMaxTime))
         .reduce(buildEventList, [])
         .do(compareEventLists(expected))
@@ -74,7 +78,7 @@ describe('watch-rx', () => {
       ]
       Observable
         .merge(
-          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true, usePolling: true }),
+          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
           performOperations(
             writeFileRx(localFileName('a/b/two'), 'test')
           )
@@ -92,7 +96,7 @@ describe('watch-rx', () => {
       ]
       Observable
         .merge(
-          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true, usePolling: true }),
+          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
           performOperations(
             writeFileRx(localFileName('a/b/two'), 'test'),
             writeFileRx(localFileName('a/c/three'), 'test')
@@ -111,7 +115,7 @@ describe('watch-rx', () => {
       ]
       Observable
         .merge(
-          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true, usePolling: true }),
+          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
           performOperations(
             unlinkRx(localFileName('a/b/two')),
             unlinkRx(localFileName('a/c/three'))
@@ -130,7 +134,7 @@ describe('watch-rx', () => {
       ]
       Observable
         .merge(
-          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true, usePolling: true }),
+          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
           performOperations(
             writeFileRx(localFileName('a/b/four'), 'test'),
             writeFileRx(localFileName('a/c/five'), 'test')
@@ -151,7 +155,7 @@ describe('watch-rx', () => {
       ]
       Observable
         .merge(
-          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true, usePolling: true }),
+          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
           performOperations(
             renameRx(localFileName('a/b/one'), localFileName('a/b/one-renamed')),
             renameRx(localFileName('a/c/three'), localFileName('a/c/three-renamed'))
