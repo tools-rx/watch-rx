@@ -9,4 +9,12 @@ jasmine.addReporter(new Reporter({
   showColors: true,
   includeStackTrace: false
 }))
+jasmine.onComplete(function (passed) {
+  if (passed) {
+    console.log('All tests passed.')
+  } else {
+    console.log('Test(s) failed.')
+    process.exit(1)
+  }
+})
 jasmine.execute()
