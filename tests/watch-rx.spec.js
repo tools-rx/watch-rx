@@ -61,7 +61,7 @@ describe('watch-rx', () => {
         'add~a/b/one',
         'add~a/b/two'
       ]
-      watchRx('**/*', { cwd: fileSet.localPath })
+      watchRx('**/*', { cwd: fileSet.localPath, usePolling: true })
         .takeUntil(Observable.timer(observeMaxTime))
         .reduce(buildEventList, [])
         .do(compareEventLists(expected))
@@ -74,7 +74,7 @@ describe('watch-rx', () => {
       ]
       Observable
         .merge(
-          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
+          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true, usePolling: true }),
           performOperations(
             writeFileRx(localFileName('a/b/two'), 'test')
           )
@@ -92,7 +92,7 @@ describe('watch-rx', () => {
       ]
       Observable
         .merge(
-          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
+          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true, usePolling: true }),
           performOperations(
             writeFileRx(localFileName('a/b/two'), 'test'),
             writeFileRx(localFileName('a/c/three'), 'test')
@@ -111,7 +111,7 @@ describe('watch-rx', () => {
       ]
       Observable
         .merge(
-          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
+          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true, usePolling: true }),
           performOperations(
             unlinkRx(localFileName('a/b/two')),
             unlinkRx(localFileName('a/c/three'))
@@ -130,7 +130,7 @@ describe('watch-rx', () => {
       ]
       Observable
         .merge(
-          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
+          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true, usePolling: true }),
           performOperations(
             writeFileRx(localFileName('a/b/four'), 'test'),
             writeFileRx(localFileName('a/c/five'), 'test')
@@ -151,7 +151,7 @@ describe('watch-rx', () => {
       ]
       Observable
         .merge(
-          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true }),
+          watchRx('**/*', { cwd: fileSet.localPath, ignoreInitial: true, usePolling: true }),
           performOperations(
             renameRx(localFileName('a/b/one'), localFileName('a/b/one-renamed')),
             renameRx(localFileName('a/c/three'), localFileName('a/c/three-renamed'))
