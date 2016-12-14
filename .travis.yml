@@ -3,8 +3,21 @@ dist: trusty
 os:
   - linux
   - osx
+cache:
+  yarn: true
+notifications:
+  email: false
 language: node_js
 node_js:
-  - "6"
-  - "5"
-  - "4"
+  - '7'
+  - '6'
+  - '4'
+branches:
+  except:
+    - /^v\d+\.\d+\.\d+$/
+before_script:
+  - npm prune
+script:
+  - npm run build
+after_success:
+  - npm run semantic-release

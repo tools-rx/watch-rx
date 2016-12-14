@@ -1,6 +1,6 @@
 {
   "name": "watch-rx",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0-development",
   "description": "File watcher using RxJS.",
   "main": "dist/index.js",
   "jsnext:main": "src/index.js",
@@ -9,7 +9,8 @@
     "build": "npm-run-all lint test clean build:ts",
     "build:ts": "babel --out-dir dist src",
     "lint": "standard",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "keywords": [
     "watch",
@@ -30,6 +31,7 @@
     "rxjs": "^5.0.1"
   },
   "devDependencies": {
+    "@semantic-release/condition-travis": "^4.1.4",
     "babel-cli": "^6.18.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.18.0",
     "babel-preset-es2015": "^6.18.0",
@@ -39,6 +41,7 @@
     "lodash": "^4.17.2",
     "npm-run-all": "^3.1.2",
     "rimraf": "^2.5.4",
+    "semantic-release": "^6.3.2",
     "standard": "^8.6.0",
     "test-files-rx": "^1.0.0"
   },
@@ -46,5 +49,16 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "release": {
+    "verifyConditions": [
+      {
+        "path": "@semantic-release/condition-travis"
+      },
+      {
+        "path": "./scripts/publish-condition.js",
+        "node": "^6"
+      }
+    ]
   }
 }
