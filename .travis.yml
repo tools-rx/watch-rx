@@ -4,24 +4,17 @@ os:
   - linux
   - osx
 cache:
-  yarn: true
+  directories:
+    - node_modules
 notifications:
   email: false
 language: node_js
 node_js:
   - 7
   - 6
-env: INSTALL_CMD="yarn"
-matrix:
-  include:
-    - node_js: 4
-      env: INSTALL_CMD="npm install"
-      os: linux
-    - node_js: 4
-      env: INSTALL_CMD="npm install"
-      os: osx
+  - 4
 install:
-  - $INSTALL_CMD
+  - npm install
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
