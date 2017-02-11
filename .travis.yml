@@ -9,9 +9,19 @@ notifications:
   email: false
 language: node_js
 node_js:
-  - '7'
-  - '6'
-  - '4'
+  - 7
+  - 6
+env: INSTALL_CMD="yarn"
+matrix:
+  include:
+    - node_js: 4
+      env: INSTALL_CMD="npm install"
+      os: linux
+    - node_js: 4
+      env: INSTALL_CMD="npm install"
+      os: osx
+install:
+  - $INSTALL_CMD
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
