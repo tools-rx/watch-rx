@@ -24,7 +24,7 @@ npm install --save watch-rx
 Use it as an observable.
 
 ```javascript
-var watchRx = require('watch-rx');
+var { watchRx } = require('watch-rx');
 
 var subscription = watchRx(pattern, options)
     .subscribe(
